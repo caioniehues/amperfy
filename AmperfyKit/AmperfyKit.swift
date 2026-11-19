@@ -171,7 +171,8 @@ public class AmperKit {
     backendAudioPlayer.updateEqualizerEnabled(isEnabled: storage.settings.user.isEqualizerEnabled)
     backendAudioPlayer
       .updateEqualizerSetting(eqSetting: storage.settings.user.activeEqualizerSetting)
-    backendAudioPlayer.updateReplayGainEnabled(isEnabled: storage.settings.user.isReplayGainEnabled)
+    backendAudioPlayer.isShuffleCB = { playerData.isShuffle }
+    backendAudioPlayer.updateReplayGainConfiguration(storage.settings.user.replayGainConfiguration)
     backendAudioPlayer.volume = storage.settings.user.playerVolume
 
     playerDownloadPreparationHandler = PlayerDownloadPreparationHandler(

@@ -218,6 +218,35 @@ class SettingsHostVC: UIViewController {
       self.appDelegate.player.updateReplayGainEnabled(isEnabled: newValue)
     }))
 
+    settings.replayGainSourceMode = appDelegate.storage.settings.user.replayGainSourceMode
+    changesAgent.append(settings.$replayGainSourceMode.sink(receiveValue: { newValue in
+      self.appDelegate.storage.settings.user.replayGainSourceMode = newValue
+      self.appDelegate.player
+        .updateReplayGainConfiguration(self.appDelegate.storage.settings.user.replayGainConfiguration)
+    }))
+
+    settings.isReplayGainClippingPreventionEnabled = appDelegate.storage.settings.user
+      .isReplayGainClippingPreventionEnabled
+    changesAgent.append(settings.$isReplayGainClippingPreventionEnabled.sink(receiveValue: { newValue in
+      self.appDelegate.storage.settings.user.isReplayGainClippingPreventionEnabled = newValue
+      self.appDelegate.player
+        .updateReplayGainConfiguration(self.appDelegate.storage.settings.user.replayGainConfiguration)
+    }))
+
+    settings.replayGainPreampDB = appDelegate.storage.settings.user.replayGainPreampDB
+    changesAgent.append(settings.$replayGainPreampDB.sink(receiveValue: { newValue in
+      self.appDelegate.storage.settings.user.replayGainPreampDB = newValue
+      self.appDelegate.player
+        .updateReplayGainConfiguration(self.appDelegate.storage.settings.user.replayGainConfiguration)
+    }))
+
+    settings.replayGainPreampWithoutTagsDB = appDelegate.storage.settings.user.replayGainPreampWithoutTagsDB
+    changesAgent.append(settings.$replayGainPreampWithoutTagsDB.sink(receiveValue: { newValue in
+      self.appDelegate.storage.settings.user.replayGainPreampWithoutTagsDB = newValue
+      self.appDelegate.player
+        .updateReplayGainConfiguration(self.appDelegate.storage.settings.user.replayGainConfiguration)
+    }))
+
     settings.isEqualizerEnabled = appDelegate.storage.settings.user.isEqualizerEnabled
     changesAgent.append(settings.$isEqualizerEnabled.sink(receiveValue: { newValue in
       self.appDelegate.storage.settings.user.isEqualizerEnabled = newValue

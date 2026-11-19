@@ -68,6 +68,10 @@ struct PlayerSettingsView: View {
     settings.cacheTranscodingFormatPreference = format
   }
 
+  private static func decibelText(_ db: Float) -> String {
+    db == 0 ? "0 dB" : String(format: "%+.0f dB", db)
+  }
+
   var body: some View {
     ZStack {
       SettingsList {
@@ -83,8 +87,43 @@ struct PlayerSettingsView: View {
                 }
               )
             )
+            if settings.isReplayGainEnabled {
+              SettingsRow(title: "Mode") {
+                Menu(settings.replayGainSourceMode.description) {
+                  ForEach(ReplayGainSourceMode.allCases, id: \.self) { mode in
+                    Button(mode.description) {
+                      settings.replayGainSourceMode = mode
+                    }
+                  }
+                }
+              }
+              SettingsCheckBoxRow(
+                title: "Prevent Clipping",
+                isOn: $settings.isReplayGainClippingPreventionEnabled
+              )
+              SettingsRow(title: "Preamp") {
+                Stepper(
+                  Self.decibelText(settings.replayGainPreampDB),
+                  value: $settings.replayGainPreampDB,
+                  in: ReplayGain.preampRange,
+                  step: 1
+                )
+                .fixedSize()
+              }
+              SettingsRow(title: "Preamp Without Tags") {
+                Stepper(
+                  Self.decibelText(settings.replayGainPreampWithoutTagsDB),
+                  value: $settings.replayGainPreampWithoutTagsDB,
+                  in: ReplayGain.preampRange,
+                  step: 1
+                )
+                .fixedSize()
+              }
+            }
           },
-          footer: "Automatically normalize track volume based on replay gain information for consistent loudness."
+          footer: settings.isReplayGainEnabled
+            ? "Track: every track plays equally loud. Album: keeps the loudness differences within an album. Auto: album gain while playing in order, track gain while shuffling. Prevent Clipping limits the gain so the track's peak stays below full scale. Preamp is added to tagged tracks; Preamp Without Tags applies to tracks without replay gain information."
+            : "Automatically normalize track volume based on replay gain information for consistent loudness."
         )
 
         // General Settings

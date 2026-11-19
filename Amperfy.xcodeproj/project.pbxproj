@@ -215,6 +215,7 @@
 		50BE5D542850F4E700156FC6 /* SubsonicVersionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E964AE25E8E25E00E3210F /* SubsonicVersionTest.swift */; };
 		50BE5D552850F4E700156FC6 /* UtilitiesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5090963726496A9500DD9826 /* UtilitiesTest.swift */; };
 		50BE5D562850F4E700156FC6 /* PlayQueueHandlerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011712D27453D1300B7C08D /* PlayQueueHandlerTest.swift */; };
+		D8DB69DC493095698809713F /* ReplayGainTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE24E883BED0584F741B50D /* ReplayGainTest.swift */; };
 		50BE5D572850F4F600156FC6 /* album_missing_artistId.xml in Resources */ = {isa = PBXBuildFile; fileRef = 50ED2B9227BB932700331BF7 /* album_missing_artistId.xml */; };
 		50BE5D582850F4F600156FC6 /* artist_example_1.xml in Resources */ = {isa = PBXBuildFile; fileRef = 50AB92C526661F5800DCE45C /* artist_example_1.xml */; };
 		50BE5D592850F4F600156FC6 /* album_multidisc_example_1.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5067E371278C1DC900807A78 /* album_multidisc_example_1.xml */; };
@@ -453,6 +454,7 @@
 		50C9D6DC284FAB88007F18D0 /* RemoteCommandCenterHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501171312756778300B7C08D /* RemoteCommandCenterHandler.swift */; };
 		50C9D6DD284FAB88007F18D0 /* BackendAudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508FDE4921F44E91005A0724 /* BackendAudioPlayer.swift */; };
 		50C9D6DE284FAB88007F18D0 /* PlayQueueHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011712B2744FDD700B7C08D /* PlayQueueHandler.swift */; };
+		EC605B9029169DFDA22EF41C /* ReplayGain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA90EC2DCD05120FC0F15B5 /* ReplayGain.swift */; };
 		50C9D6E3284FAB96007F18D0 /* UIImageAssetsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B053AC27BFADB200D9C1ED /* UIImageAssetsExtension.swift */; };
 		50C9D6E6284FABCB007F18D0 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C9D6E5284FABCB007F18D0 /* AudioPlayer.swift */; };
 		50C9D6E9284FACAF007F18D0 /* ArtworkCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C9D6E8284FACAF007F18D0 /* ArtworkCollection.swift */; };
@@ -663,7 +665,9 @@
 		500DA6502F08750A005578C7 /* CarPlayCommonListExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlayCommonListExtension.swift; sourceTree = "<group>"; };
 		501171292743F25300B7C08D /* PlayerUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerUtil.swift; sourceTree = "<group>"; };
 		5011712B2744FDD700B7C08D /* PlayQueueHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayQueueHandler.swift; sourceTree = "<group>"; };
+		2EA90EC2DCD05120FC0F15B5 /* ReplayGain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayGain.swift; sourceTree = "<group>"; };
 		5011712D27453D1300B7C08D /* PlayQueueHandlerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayQueueHandlerTest.swift; sourceTree = "<group>"; };
+		6BE24E883BED0584F741B50D /* ReplayGainTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayGainTest.swift; sourceTree = "<group>"; };
 		5011712F27565B2A00B7C08D /* PlayerFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerFacade.swift; sourceTree = "<group>"; };
 		501171312756778300B7C08D /* RemoteCommandCenterHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCommandCenterHandler.swift; sourceTree = "<group>"; };
 		501171332756A73000B7C08D /* AudioSessionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSessionHandler.swift; sourceTree = "<group>"; };
@@ -1658,6 +1662,7 @@
 			children = (
 				5095F98B23C8389E008B0805 /* MusicPlayerTest.swift */,
 				5011712D27453D1300B7C08D /* PlayQueueHandlerTest.swift */,
+				6BE24E883BED0584F741B50D /* ReplayGainTest.swift */,
 			);
 			path = Player;
 			sourceTree = "<group>";
@@ -2250,6 +2255,7 @@
 				508FDE4921F44E91005A0724 /* BackendAudioPlayer.swift */,
 				501171292743F25300B7C08D /* PlayerUtil.swift */,
 				5011712B2744FDD700B7C08D /* PlayQueueHandler.swift */,
+				2EA90EC2DCD05120FC0F15B5 /* ReplayGain.swift */,
 				501171312756778300B7C08D /* RemoteCommandCenterHandler.swift */,
 				501171352756A8E100B7C08D /* NowPlayingInfoCenterHandler.swift */,
 				501171332756A73000B7C08D /* AudioSessionHandler.swift */,
@@ -2932,6 +2938,7 @@
 				50CEC63F2D1EDCE500D0E696 /* RadioMO+CoreDataProperties.swift in Sources */,
 				50C9D645284FA9C7007F18D0 /* BackendApi.swift in Sources */,
 				50C9D6DE284FAB88007F18D0 /* PlayQueueHandler.swift in Sources */,
+				EC605B9029169DFDA22EF41C /* ReplayGain.swift in Sources */,
 				50C9D681284FAA6C007F18D0 /* MusicFolderMO+CoreDataProperties.swift in Sources */,
 				50C9D6AC284FAA87007F18D0 /* Podcast.swift in Sources */,
 				50C9D65A284FAA0B007F18D0 /* ArtistParserDelegate.swift in Sources */,
@@ -3015,6 +3022,7 @@
 				50E520D62F65886600667E0A /* GetSimiliarSongsParserTest.swift in Sources */,
 				50BE5D902850F50F00156FC6 /* PodcastEpisodesExample2ParserTest.swift in Sources */,
 				50BE5D562850F4E700156FC6 /* PlayQueueHandlerTest.swift in Sources */,
+				D8DB69DC493095698809713F /* ReplayGainTest.swift in Sources */,
 				50BE5D4A2850F4C900156FC6 /* SongTest.swift in Sources */,
 				3E259BB6C3BA5E7278C240AF /* DownloadTest.swift in Sources */,
 				907A960F28CAA324B82D4903 /* SongsFetchedResultsControllerTest.swift in Sources */,
