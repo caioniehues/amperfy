@@ -104,6 +104,8 @@ jobs:
             -skipMacroValidation \
             CODE_SIGNING_ALLOWED=NO 2>&1 | tee test.log | grep -E "(Test Case|error:|TEST (SUCCEEDED|FAILED)|Executed)" || true
           grep -q "TEST SUCCEEDED" test.log
+          # An -only-testing selector that matches nothing still "succeeds": require real tests.
+          grep -Eq "Executed [1-9][0-9]* tests?, with 0 failures" test.log
 
       - uses: actions/upload-artifact@v4
         if: always()
