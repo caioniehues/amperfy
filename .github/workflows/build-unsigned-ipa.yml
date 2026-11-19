@@ -66,3 +66,48 @@ jobs:
           name: build-log
           path: build.log
           retention-days: 14
+
+  test:
+    # Unit tests of the fork's own changes, on an iOS simulator.
+    runs-on: macos-26-intel
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          xcode=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          [ -n "$xcode" ] || xcode=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
+
+      - name: Pick an iPhone simulator
+        id: sim
+        run: |
+          udid=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          d = json.load(sys.stdin)["devices"]
+          sims = [s for rt, ds in sorted(d.items(), reverse=True) if "iOS" in rt for s in ds if s["name"].startswith("iPhone")]
+          print(sims[0]["udid"])')
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+          xcrun simctl list devices available | grep "$udid"
+
+      - name: Run ReplayGain tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project Amperfy.xcodeproj \
+            -scheme Amperfy \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -only-testing:AmperfyTests/ReplayGainTest \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee test.log | grep -E "(Test Case|error:|TEST (SUCCEEDED|FAILED)|Executed)" || true
+          grep -q "TEST SUCCEEDED" test.log
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-log
+          path: test.log
+          retention-days: 14
