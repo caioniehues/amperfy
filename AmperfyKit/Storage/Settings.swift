@@ -228,14 +228,14 @@ public struct UserSettings: Sendable, Codable {
 
   private var _replayGainPreampDB: Float = 0
   public var replayGainPreampDB: Float {
-    get { ReplayGain.clampedPreamp(_replayGainPreampDB) }
-    set { _replayGainPreampDB = ReplayGain.clampedPreamp(newValue) }
+    get { _replayGainPreampDB }
+    set { _replayGainPreampDB = newValue }
   }
 
   private var _replayGainPreampWithoutTagsDB: Float = 0
   public var replayGainPreampWithoutTagsDB: Float {
-    get { ReplayGain.clampedPreamp(_replayGainPreampWithoutTagsDB) }
-    set { _replayGainPreampWithoutTagsDB = ReplayGain.clampedPreamp(newValue) }
+    get { _replayGainPreampWithoutTagsDB }
+    set { _replayGainPreampWithoutTagsDB = newValue }
   }
 
   public var replayGainConfiguration: ReplayGainConfiguration {

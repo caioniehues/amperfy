@@ -215,7 +215,8 @@ class SettingsHostVC: UIViewController {
     settings.isReplayGainEnabled = appDelegate.storage.settings.user.isReplayGainEnabled
     changesAgent.append(settings.$isReplayGainEnabled.sink(receiveValue: { newValue in
       self.appDelegate.storage.settings.user.isReplayGainEnabled = newValue
-      self.appDelegate.player.updateReplayGainEnabled(isEnabled: newValue)
+      self.appDelegate.player
+        .updateReplayGainConfiguration(self.appDelegate.storage.settings.user.replayGainConfiguration)
     }))
 
     settings.replayGainSourceMode = appDelegate.storage.settings.user.replayGainSourceMode

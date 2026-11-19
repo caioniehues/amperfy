@@ -29,7 +29,9 @@ public enum ReplayGainSourceMode: Int, Codable, Sendable, CaseIterable {
   case track = 0
   /// Album gain: keeps the loudness differences within an album, as mastered.
   case album = 1
-  /// Album gain while the queue plays in order, track gain while shuffling.
+  /// Album gain while the queue plays in order, track gain while shuffling
+  /// (foobar2000's "by playback order"). Decided by the shuffle state only:
+  /// a playlist mixing albums, played in order, gets album gain.
   case auto = 2
 
   public static let defaultValue: ReplayGainSourceMode = .track
@@ -69,8 +71,9 @@ public struct ReplayGainValues: Equatable, Sendable {
 
 // MARK: - ReplayGainConfiguration
 
-/// The user's ReplayGain settings. The defaults reproduce the original behaviour:
-/// track gain, no clipping prevention, no preamp.
+/// The user's ReplayGain settings. The defaults match the original behaviour (track gain,
+/// no clipping prevention, no preamp) with one difference: a playable that has only album
+/// tags now gets its album gain, where it used to get none.
 public struct ReplayGainConfiguration: Equatable, Sendable {
   public var isEnabled: Bool
   public var sourceMode: ReplayGainSourceMode
@@ -147,7 +150,7 @@ public enum ReplayGain {
     pow(10.0, db / 20.0)
   }
 
-  static func clampedPreamp(_ db: Float) -> Float {
+  private static func clampedPreamp(_ db: Float) -> Float {
     min(max(db, preampRange.lowerBound), preampRange.upperBound)
   }
 }
