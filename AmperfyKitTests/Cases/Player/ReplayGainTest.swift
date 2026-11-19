@@ -25,13 +25,19 @@ import XCTest
 class ReplayGainTest: XCTestCase {
   private let accuracy: Float = 0.0001
 
-  private let tagged = ReplayGainValues(trackGain: -6, trackPeak: 0.9, albumGain: -8, albumPeak: 0.95)
+  private let tagged = ReplayGainValues(
+    trackGain: -6,
+    trackPeak: 0.9,
+    albumGain: -8,
+    albumPeak: 0.95
+  )
 
   private func gain(
     _ values: ReplayGainValues,
     _ configuration: ReplayGainConfiguration = .defaultValue,
     shuffle: Bool = false
-  ) -> Float {
+  )
+    -> Float {
     ReplayGain.linearGain(values: values, configuration: configuration, isShuffle: shuffle)
   }
 
@@ -76,7 +82,10 @@ class ReplayGainTest: XCTestCase {
   }
 
   func testShuffleIsIgnoredOutsideAutoMode() {
-    XCTAssertEqual(gain(tagged, .defaultValue, shuffle: true), gain(tagged, .defaultValue, shuffle: false))
+    XCTAssertEqual(
+      gain(tagged, .defaultValue, shuffle: true),
+      gain(tagged, .defaultValue, shuffle: false)
+    )
     let album = ReplayGainConfiguration(sourceMode: .album)
     XCTAssertEqual(gain(tagged, album, shuffle: true), gain(tagged, album, shuffle: false))
   }

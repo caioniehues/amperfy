@@ -56,7 +56,12 @@ public struct ReplayGainValues: Equatable, Sendable {
   public var albumGain: Float
   public var albumPeak: Float
 
-  public init(trackGain: Float = 0, trackPeak: Float = 0, albumGain: Float = 0, albumPeak: Float = 0) {
+  public init(
+    trackGain: Float = 0,
+    trackPeak: Float = 0,
+    albumGain: Float = 0,
+    albumPeak: Float = 0
+  ) {
     self.trackGain = trackGain
     self.trackPeak = trackPeak
     self.albumGain = albumGain
@@ -117,7 +122,8 @@ public enum ReplayGain {
     values: ReplayGainValues,
     configuration: ReplayGainConfiguration,
     isShuffle: Bool
-  ) -> Float {
+  )
+    -> Float {
     guard configuration.isEnabled else { return 1.0 }
 
     let prefersAlbum: Bool
