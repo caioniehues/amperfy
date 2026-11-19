@@ -1,7 +1,8 @@
 ## Working in this repo
 
 - Swift work: use the `swift-without-mac` skill (local Swift 6 compile + tests, pbxproj registration). Unit-test target: `AmperfyKitTests`; the scheme's `AmperfyTests` and `AmperfyUITests` entries are stale.
-- Branches: `feature/*` (off `upstream/master`) are upstream-PR material and stay free of CI and agent docs; `replaygain` is the build branch (CI + this file) that merges them.
+- Branches: `replaygain` is the fork's **default branch**: Caio's Amperfy with every feature merged in, plus CI and this file. `feature/*` (off `upstream/master`) are upstream-PR material and stay free of CI and agent docs. `master` mirrors upstream untouched.
+- Syncing upstream: `gh repo sync caioniehues/amperfy --branch master` (the default-branch sync would target `replaygain`), then merge `master` into `replaygain`. Upstream PRs: `gh pr create -R BLeeEZ/amperfy --base master --head caioniehues:feature/<name>`.
 
 ## Agent skills
 
