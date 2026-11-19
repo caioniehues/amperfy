@@ -214,6 +214,40 @@ public struct UserSettings: Sendable, Codable {
     set { _isReplayGainEnabled = newValue }
   }
 
+  private var _replayGainSourceMode: ReplayGainSourceMode = .defaultValue
+  public var replayGainSourceMode: ReplayGainSourceMode {
+    get { _replayGainSourceMode }
+    set { _replayGainSourceMode = newValue }
+  }
+
+  private var _isReplayGainClippingPreventionEnabled: Bool = false
+  public var isReplayGainClippingPreventionEnabled: Bool {
+    get { _isReplayGainClippingPreventionEnabled }
+    set { _isReplayGainClippingPreventionEnabled = newValue }
+  }
+
+  private var _replayGainPreampDB: Float = 0
+  public var replayGainPreampDB: Float {
+    get { ReplayGain.clampedPreamp(_replayGainPreampDB) }
+    set { _replayGainPreampDB = ReplayGain.clampedPreamp(newValue) }
+  }
+
+  private var _replayGainPreampWithoutTagsDB: Float = 0
+  public var replayGainPreampWithoutTagsDB: Float {
+    get { ReplayGain.clampedPreamp(_replayGainPreampWithoutTagsDB) }
+    set { _replayGainPreampWithoutTagsDB = ReplayGain.clampedPreamp(newValue) }
+  }
+
+  public var replayGainConfiguration: ReplayGainConfiguration {
+    ReplayGainConfiguration(
+      isEnabled: isReplayGainEnabled,
+      sourceMode: replayGainSourceMode,
+      isClippingPreventionEnabled: isReplayGainClippingPreventionEnabled,
+      preampDB: replayGainPreampDB,
+      preampWithoutTagsDB: replayGainPreampWithoutTagsDB
+    )
+  }
+
   private var _isMiniPlayerAlwaysOnTop: Bool = false
   public var isMiniPlayerAlwaysOnTop: Bool {
     get { _isMiniPlayerAlwaysOnTop }

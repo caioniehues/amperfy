@@ -246,6 +246,7 @@ public protocol PlayerFacade {
   func updateEqualizerEnabled(isEnabled: Bool)
   func updateEqualizerSetting(eqSetting: EqualizerSetting)
   func updateReplayGainEnabled(isEnabled: Bool)
+  func updateReplayGainConfiguration(_ configuration: ReplayGainConfiguration)
 }
 
 extension PlayerFacade {
@@ -533,6 +534,10 @@ class PlayerFacadeImpl: PlayerFacade {
     backendAudioPlayer.updateReplayGainEnabled(isEnabled: isEnabled)
   }
 
+  public func updateReplayGainConfiguration(_ configuration: ReplayGainConfiguration) {
+    backendAudioPlayer.updateReplayGainConfiguration(configuration)
+  }
+
   func logout(account: Account) {
     if queueHandler.logout(account: account) {
       stop()
@@ -626,6 +631,7 @@ class PlayerFacadeImpl: PlayerFacade {
       musicPlayer.notifyShuffleUpdated()
     }
     musicPlayer.play(context: context)
+    backendAudioPlayer.reapplyReplayGain()
     musicPlayer.notifyPlaylistUpdated()
   }
 
@@ -641,6 +647,8 @@ class PlayerFacadeImpl: PlayerFacade {
     let shuffleContext = context.getWithShuffledIndex()
     musicPlayer.play(context: shuffleContext)
     playerStatus.setShuffle(true)
+    // Shuffle is set after the first item started: let ReplayGain's auto mode see it.
+    backendAudioPlayer.reapplyReplayGain()
     musicPlayer.notifyShuffleUpdated()
     musicPlayer.notifyPlaylistUpdated()
   }

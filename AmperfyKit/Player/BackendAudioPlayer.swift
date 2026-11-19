@@ -121,8 +121,10 @@ class BackendAudioPlayer: NSObject {
   public private(set) var audioAnalyzer: AudioAnalyzer
 
   // ReplayGain Settings
-  private var isReplayGainEnabled: Bool = true
-  private var currentReplayGainValue: Float = 0.0 // ReplayGain in dB
+  private var replayGainConfiguration = ReplayGainConfiguration.defaultValue
+  private var currentReplayGainValues = ReplayGainValues.none
+  /// Asked when a playable starts, for ReplayGain's auto mode (album gain unless shuffling).
+  var isShuffleCB: (@MainActor () -> Bool)?
   // EQ Settings
   private var equalizerVolumeCompensation: Float = 1.0
   private var isEqualizerEnabled: Bool = true
@@ -542,7 +544,7 @@ class BackendAudioPlayer: NSObject {
       activeTranscodingFormat = preloadTranscodingFormat
       preloadTranscodingFormat = nil
       isPreviousPlaylableFinshed = false
-      currentReplayGainValue = nextPreloadedPlayable.replayGainTrackGain
+      currentReplayGainValues = ReplayGainValues(playable: nextPreloadedPlayable)
       applyReplayGain()
       self.nextPreloadedPlayable = nil
       nextPreloadedUrl = ""
@@ -563,7 +565,7 @@ class BackendAudioPlayer: NSObject {
         )
         return
       }
-      currentReplayGainValue = playable.replayGainTrackGain
+      currentReplayGainValues = ReplayGainValues(playable: playable)
       applyReplayGain()
       insertCachedPlayable(playable: playable)
       isPlaying = shouldPlaybackStart
@@ -596,7 +598,7 @@ class BackendAudioPlayer: NSObject {
 
       Task { @MainActor in
         do {
-          currentReplayGainValue = playable.replayGainTrackGain
+          currentReplayGainValues = ReplayGainValues(playable: playable)
           applyReplayGain()
           try await insertStreamPlayable(playable: playable)
           isPlaying = shouldPlaybackStart
@@ -896,7 +898,18 @@ class BackendAudioPlayer: NSObject {
   // MARK: - ReplayGain Implementation
 
   func updateReplayGainEnabled(isEnabled: Bool) {
-    isReplayGainEnabled = isEnabled
+    replayGainConfiguration.isEnabled = isEnabled
+    applyReplayGain()
+  }
+
+  func updateReplayGainConfiguration(_ configuration: ReplayGainConfiguration) {
+    replayGainConfiguration = configuration
+    applyReplayGain()
+  }
+
+  /// Recomputes the gain of the current playable, e.g. after the shuffle state changed
+  /// while a new playback started (auto mode picks track or album gain from it).
+  func reapplyReplayGain() {
     applyReplayGain()
   }
 
@@ -904,26 +917,35 @@ class BackendAudioPlayer: NSObject {
     guard let replayGain = replayGainNode else { return }
 
     let eqCompensation = isEqualizerEnabled ? equalizerVolumeCompensation : 1.0
+    let linearGain = ReplayGain.linearGain(
+      values: currentReplayGainValues,
+      configuration: replayGainConfiguration,
+      isShuffle: isShuffleCB?() ?? false
+    )
+    replayGain.outputVolume = linearGain * eqCompensation
+    os_log(
+      .debug,
+      "ReplayGain (%s): track %.2f dB / %.3f, album %.2f dB / %.3f → %.3f linear gain (EQ Compensation: %.2f)",
+      replayGainConfiguration.isEnabled ? replayGainConfiguration.sourceMode.description : "off",
+      currentReplayGainValues.trackGain,
+      currentReplayGainValues.trackPeak,
+      currentReplayGainValues.albumGain,
+      currentReplayGainValues.albumPeak,
+      linearGain,
+      eqCompensation
+    )
+  }
+}
 
-    if isReplayGainEnabled, currentReplayGainValue != 0.0 {
-      // Convert dB to linear scale: gain = pow(10, dB / 20)
-      let linearGain = pow(10.0, currentReplayGainValue / 20.0)
-      replayGain.outputVolume = linearGain * eqCompensation
-      os_log(
-        .debug,
-        "ReplayGain: %.2f dB → %.3f linear gain (EQ Compensation: %.2f)",
-        currentReplayGainValue,
-        linearGain,
-        eqCompensation
-      )
-    } else {
-      replayGain.outputVolume = eqCompensation
-      os_log(
-        .debug,
-        "ReplayGain: disabled or no gain data (EQ Compensation: %.2f)",
-        eqCompensation
-      )
-    }
+extension ReplayGainValues {
+  @MainActor
+  init(playable: AbstractPlayable) {
+    self.init(
+      trackGain: playable.replayGainTrackGain,
+      trackPeak: playable.replayGainTrackPeak,
+      albumGain: playable.replayGainAlbumGain,
+      albumPeak: playable.replayGainAlbumPeak
+    )
   }
 }
 
