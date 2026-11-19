@@ -99,7 +99,7 @@ jobs:
             -project Amperfy.xcodeproj \
             -scheme Amperfy \
             -destination "id=${{ steps.sim.outputs.udid }}" \
-            -only-testing:AmperfyTests/ReplayGainTest \
+            -only-testing:AmperfyKitTests/ReplayGainTest \
             -skipPackagePluginValidation \
             -skipMacroValidation \
             CODE_SIGNING_ALLOWED=NO 2>&1 | tee test.log | grep -E "(Test Case|error:|TEST (SUCCEEDED|FAILED)|Executed)" || true
