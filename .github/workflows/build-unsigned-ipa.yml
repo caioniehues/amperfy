@@ -1,0 +1,67 @@
+# Builds an unsigned Amperfy.ipa for sideloading.
+# The .ipa is re-signed and installed from Linux with `xtool install`
+# (omarchy-apple-dev), so this job turns code signing off entirely.
+name: Build unsigned IPA
+
+on:
+  push:
+    branches: [replaygain]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          # README asks for Xcode 26; take the newest 26.x, else the newest installed.
+          xcode=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          [ -n "$xcode" ] || xcode=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
+
+      - name: Build (iphoneos, unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project Amperfy.xcodeproj \
+            -scheme Amperfy \
+            -configuration Debug \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build 2>&1 | tee build.log | grep -E '(error|warning: .*ReplayGain|BUILD (SUCCEEDED|FAILED))' || true
+          test -d build/Build/Products/Debug-iphoneos/Amperfy.app
+
+      - name: Package .ipa
+        run: |
+          mkdir Payload
+          cp -R build/Build/Products/Debug-iphoneos/Amperfy.app Payload/
+          zip -qry Amperfy.ipa Payload
+          ls -la Amperfy.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Amperfy-unsigned-ipa
+          path: Amperfy.ipa
+          retention-days: 14
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-log
+          path: build.log
+          retention-days: 14
