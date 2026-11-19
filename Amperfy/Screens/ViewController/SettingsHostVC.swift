@@ -226,11 +226,13 @@ class SettingsHostVC: UIViewController {
 
     settings.isReplayGainClippingPreventionEnabled = appDelegate.storage.settings.user
       .isReplayGainClippingPreventionEnabled
-    changesAgent.append(settings.$isReplayGainClippingPreventionEnabled
-      .sink(receiveValue: { newValue in
-        self.appDelegate.storage.settings.user.isReplayGainClippingPreventionEnabled = newValue
-        self.applyReplayGainSettings()
-      }))
+    changesAgent.append(
+      settings.$isReplayGainClippingPreventionEnabled
+        .sink(receiveValue: { newValue in
+          self.appDelegate.storage.settings.user.isReplayGainClippingPreventionEnabled = newValue
+          self.applyReplayGainSettings()
+        })
+    )
 
     settings.replayGainPreampDB = appDelegate.storage.settings.user.replayGainPreampDB
     changesAgent.append(settings.$replayGainPreampDB.sink(receiveValue: { newValue in
@@ -331,8 +333,6 @@ class SettingsHostVC: UIViewController {
     }))
   }
 
-  /// The checkbox also follows a switch made elsewhere (quick action, Shortcuts, another window)
-  @objc
   /// Sends the stored ReplayGain settings to the player.
   private func applyReplayGainSettings() {
     appDelegate.player.updateReplayGainConfiguration(
@@ -340,6 +340,8 @@ class SettingsHostVC: UIViewController {
     )
   }
 
+  /// The checkbox also follows a switch made elsewhere (quick action, Shortcuts, another window)
+  @objc
   private func applyOfflineMode() {
     settings.isOfflineMode = appDelegate.storage.settings.user.isOfflineMode
   }

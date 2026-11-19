@@ -932,18 +932,6 @@ class BackendAudioPlayer: NSObject {
   }
 }
 
-extension ReplayGainValues {
-  @MainActor
-  init(playable: AbstractPlayable) {
-    self.init(
-      trackGain: playable.replayGainTrackGain,
-      trackPeak: playable.replayGainTrackPeak,
-      albumGain: playable.replayGainAlbumGain,
-      albumPeak: playable.replayGainAlbumPeak
-    )
-  }
-}
-
 // MARK: AudioStreaming.AudioPlayerDelegate
 
 extension BackendAudioPlayer: AudioStreaming.AudioPlayerDelegate {
@@ -1051,5 +1039,19 @@ extension BackendAudioPlayer: AudioStreaming.AudioPlayerDelegate {
     Task { @MainActor in
       self.responder?.didReadStreamMetadata(metadata)
     }
+  }
+}
+
+// MARK: - ReplayGainValues + AbstractPlayable
+
+extension ReplayGainValues {
+  @MainActor
+  init(playable: AbstractPlayable) {
+    self.init(
+      trackGain: playable.replayGainTrackGain,
+      trackPeak: playable.replayGainTrackPeak,
+      albumGain: playable.replayGainAlbumGain,
+      albumPeak: playable.replayGainAlbumPeak
+    )
   }
 }
