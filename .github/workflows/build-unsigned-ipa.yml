@@ -14,7 +14,8 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-26
+    # Intel pool: the arm64 macOS pool had no capacity (2026-11-19, job never acquired).
+    runs-on: macos-26-intel
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
