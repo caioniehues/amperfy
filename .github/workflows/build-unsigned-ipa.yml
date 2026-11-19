@@ -44,7 +44,12 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            build 2>&1 | tee build.log | grep -E '(error|warning: .*ReplayGain|BUILD (SUCCEEDED|FAILED))' || true
+            build > build.log 2>&1 || true
+          grep -E '(error:|BUILD (SUCCEEDED|FAILED))' build.log | tail -40 || true
+          # The app folder survives a failed build (partial products), so it proves nothing:
+          # require xcodebuild's own success line and no compiler errors.
+          grep -q '\*\* BUILD SUCCEEDED \*\*' build.log
+          if grep -q ' error: ' build.log; then echo "compiler errors in build.log"; exit 1; fi
           test -d build/Build/Products/Debug-iphoneos/Amperfy.app
 
       - name: Package .ipa
@@ -67,8 +72,53 @@ jobs:
           path: build.log
           retention-days: 14
 
+  lint:
+    # SwiftFormat only rewrites files during the Xcode build; this fails on style instead,
+    # for every Swift file this branch changes compared with upstream.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: swiftformat --lint (changed files)
+        run: |
+          swift --version
+          git remote add upstream https://github.com/BLeeEZ/amperfy.git
+          git fetch -q upstream master
+          mapfile -t files < <(git diff --name-only --diff-filter=d upstream/master...HEAD -- '*.swift')
+          if [ ${#files[@]} -eq 0 ]; then echo "no changed Swift files"; exit 0; fi
+          printf '%s\n' "${files[@]}"
+          swift build -c release --package-path BuildTools --product swiftformat
+          "$(swift build -c release --package-path BuildTools --show-bin-path)/swiftformat" \
+            --lint --config .swiftformat "${files[@]}"
+
+  changes:
+    # The simulator test job takes ~40 min on Intel: run it only when tested code changed.
+    runs-on: ubuntu-latest
+    outputs:
+      tests: ${{ steps.diff.outputs.tests }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: diff
+        run: |
+          before='${{ github.event.before }}'
+          if [ '${{ github.event_name }}' != push ] || ! git cat-file -e "$before" 2>/dev/null; then
+            echo "tests=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if git diff --name-only "$before" HEAD | grep -qE '^(AmperfyKit/|AmperfyKitTests/|\.github/workflows/)'; then
+            echo "tests=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "tests=false" >> "$GITHUB_OUTPUT"
+          fi
+
   test:
     # Unit tests of the fork's own changes, on an iOS simulator.
+    needs: changes
+    if: needs.changes.outputs.tests == 'true'
     runs-on: macos-26-intel
     timeout-minutes: 60
     steps:

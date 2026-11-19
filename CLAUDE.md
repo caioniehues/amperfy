@@ -1,3 +1,8 @@
+## Working in this repo
+
+- Swift work: use the `swift-without-mac` skill (local Swift 6 compile + tests, pbxproj registration). Unit-test target: `AmperfyKitTests`; the scheme's `AmperfyTests` and `AmperfyUITests` entries are stale.
+- Branches: `feature/*` (off `upstream/master`) are upstream-PR material and stay free of CI and agent docs; `replaygain` is the build branch (CI + this file) that merges them.
+
 ## Agent skills
 
 ### Issue tracker
