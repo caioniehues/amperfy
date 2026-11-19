@@ -215,37 +215,34 @@ class SettingsHostVC: UIViewController {
     settings.isReplayGainEnabled = appDelegate.storage.settings.user.isReplayGainEnabled
     changesAgent.append(settings.$isReplayGainEnabled.sink(receiveValue: { newValue in
       self.appDelegate.storage.settings.user.isReplayGainEnabled = newValue
-      self.appDelegate.player
-        .updateReplayGainConfiguration(self.appDelegate.storage.settings.user.replayGainConfiguration)
+      self.applyReplayGainSettings()
     }))
 
     settings.replayGainSourceMode = appDelegate.storage.settings.user.replayGainSourceMode
     changesAgent.append(settings.$replayGainSourceMode.sink(receiveValue: { newValue in
       self.appDelegate.storage.settings.user.replayGainSourceMode = newValue
-      self.appDelegate.player
-        .updateReplayGainConfiguration(self.appDelegate.storage.settings.user.replayGainConfiguration)
+      self.applyReplayGainSettings()
     }))
 
     settings.isReplayGainClippingPreventionEnabled = appDelegate.storage.settings.user
       .isReplayGainClippingPreventionEnabled
-    changesAgent.append(settings.$isReplayGainClippingPreventionEnabled.sink(receiveValue: { newValue in
-      self.appDelegate.storage.settings.user.isReplayGainClippingPreventionEnabled = newValue
-      self.appDelegate.player
-        .updateReplayGainConfiguration(self.appDelegate.storage.settings.user.replayGainConfiguration)
-    }))
+    changesAgent.append(settings.$isReplayGainClippingPreventionEnabled
+      .sink(receiveValue: { newValue in
+        self.appDelegate.storage.settings.user.isReplayGainClippingPreventionEnabled = newValue
+        self.applyReplayGainSettings()
+      }))
 
     settings.replayGainPreampDB = appDelegate.storage.settings.user.replayGainPreampDB
     changesAgent.append(settings.$replayGainPreampDB.sink(receiveValue: { newValue in
       self.appDelegate.storage.settings.user.replayGainPreampDB = newValue
-      self.appDelegate.player
-        .updateReplayGainConfiguration(self.appDelegate.storage.settings.user.replayGainConfiguration)
+      self.applyReplayGainSettings()
     }))
 
-    settings.replayGainPreampWithoutTagsDB = appDelegate.storage.settings.user.replayGainPreampWithoutTagsDB
+    settings.replayGainPreampWithoutTagsDB = appDelegate.storage.settings.user
+      .replayGainPreampWithoutTagsDB
     changesAgent.append(settings.$replayGainPreampWithoutTagsDB.sink(receiveValue: { newValue in
       self.appDelegate.storage.settings.user.replayGainPreampWithoutTagsDB = newValue
-      self.appDelegate.player
-        .updateReplayGainConfiguration(self.appDelegate.storage.settings.user.replayGainConfiguration)
+      self.applyReplayGainSettings()
     }))
 
     settings.isEqualizerEnabled = appDelegate.storage.settings.user.isEqualizerEnabled
@@ -336,6 +333,13 @@ class SettingsHostVC: UIViewController {
 
   /// The checkbox also follows a switch made elsewhere (quick action, Shortcuts, another window)
   @objc
+  /// Sends the stored ReplayGain settings to the player.
+  private func applyReplayGainSettings() {
+    appDelegate.player.updateReplayGainConfiguration(
+      appDelegate.storage.settings.user.replayGainConfiguration
+    )
+  }
+
   private func applyOfflineMode() {
     settings.isOfflineMode = appDelegate.storage.settings.user.isOfflineMode
   }
