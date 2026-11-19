@@ -122,7 +122,7 @@ struct PlayerSettingsView: View {
             }
           },
           footer: settings.isReplayGainEnabled
-            ? "Track: every track plays equally loud. Album: keeps the loudness differences within an album. Auto: album gain while playing in order, track gain while shuffling. Prevent Clipping limits the gain so the track's peak stays below full scale. Preamp is added to tagged tracks; Preamp Without Tags applies to tracks without replay gain information."
+            ? "Track: every track plays equally loud. Album: keeps the loudness differences within an album. Auto: album gain while playing in order, track gain while shuffling. Prevent Clipping limits the gain so the peak doesn't exceed full scale. Preamp is added to tagged tracks; Preamp Without Tags applies to tracks without replay gain information."
             : "Automatically normalize track volume based on replay gain information for consistent loudness."
         )
 
