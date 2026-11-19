@@ -245,7 +245,6 @@ public protocol PlayerFacade {
 
   func updateEqualizerEnabled(isEnabled: Bool)
   func updateEqualizerSetting(eqSetting: EqualizerSetting)
-  func updateReplayGainEnabled(isEnabled: Bool)
   func updateReplayGainConfiguration(_ configuration: ReplayGainConfiguration)
 }
 
@@ -530,10 +529,6 @@ class PlayerFacadeImpl: PlayerFacade {
     backendAudioPlayer.updateEqualizerSetting(eqSetting: eqSetting)
   }
 
-  public func updateReplayGainEnabled(isEnabled: Bool) {
-    backendAudioPlayer.updateReplayGainEnabled(isEnabled: isEnabled)
-  }
-
   public func updateReplayGainConfiguration(_ configuration: ReplayGainConfiguration) {
     backendAudioPlayer.updateReplayGainConfiguration(configuration)
   }
@@ -631,7 +626,6 @@ class PlayerFacadeImpl: PlayerFacade {
       musicPlayer.notifyShuffleUpdated()
     }
     musicPlayer.play(context: context)
-    backendAudioPlayer.reapplyReplayGain()
     musicPlayer.notifyPlaylistUpdated()
   }
 

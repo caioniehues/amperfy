@@ -897,18 +897,13 @@ class BackendAudioPlayer: NSObject {
 
   // MARK: - ReplayGain Implementation
 
-  func updateReplayGainEnabled(isEnabled: Bool) {
-    replayGainConfiguration.isEnabled = isEnabled
-    applyReplayGain()
-  }
-
   func updateReplayGainConfiguration(_ configuration: ReplayGainConfiguration) {
     replayGainConfiguration = configuration
     applyReplayGain()
   }
 
-  /// Recomputes the gain of the current playable, e.g. after the shuffle state changed
-  /// while a new playback started (auto mode picks track or album gain from it).
+  /// Recomputes the gain of the current playable. `playShuffled` sets shuffle only after
+  /// the first item started, so auto mode needs this to switch that item to track gain.
   func reapplyReplayGain() {
     applyReplayGain()
   }
